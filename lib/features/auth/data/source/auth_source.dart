@@ -43,6 +43,7 @@ class AuthSourceImplementation extends AuthSource {
 
       return Right(userModel);
     } on FirebaseAuthException catch (e) {
+      print("Failed ${e.code}");
       return Left(_mapFirebaseError(e));
     } catch (e) {
       return Left(AuthException("Something went wrong. Please try again."));
@@ -54,6 +55,9 @@ class AuthSourceImplementation extends AuthSource {
     required AuthModel authModel,
   }) async {
     try {
+      print("Email :- ${authModel.email.trim()}");
+      print("Password :- ${authModel.password.trim()}");
+
       final result = await firebaseAuth.createUserWithEmailAndPassword(
         email: authModel.email.trim(),
         password: authModel.password.trim(),
@@ -69,7 +73,7 @@ class AuthSourceImplementation extends AuthSource {
       print("Success ${result.user}");
       return Right(result);
     } on FirebaseAuthException catch (e) {
-      print("Failed ${e}");
+      print("Failed ${e.code}");
       return Left(_mapFirebaseError(e));
     } catch (_) {
       print("Something went wrong. Please try again.");
@@ -83,8 +87,14 @@ AppException _mapFirebaseError(FirebaseAuthException e) {
     case 'user-not-found':
       return AuthException("No account found with this email.");
 
-    case 'wrong-password':
-      return AuthException("Incorrect password.");
+    case 'weak-password':
+      return AuthException("Weak password");
+
+    case 'invalid-credential':
+      return AuthException("Incorrect credential.");
+
+    case 'email-already-in-use':
+      return AuthException("Email already exist");
 
     case 'invalid-email':
       return AuthException("Invalid email address.");

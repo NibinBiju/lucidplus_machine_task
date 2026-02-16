@@ -8,8 +8,13 @@ class AuthLoading extends AuthState {}
 
 class AuthAuthenticated extends AuthState {
   final UserModel user;
-
   AuthAuthenticated({required this.user});
+}
+
+class AuthAccountCreated extends AuthState {
+   final String message;
+
+  AuthAccountCreated({required this.message});
 }
 
 class AuthError extends AuthState {

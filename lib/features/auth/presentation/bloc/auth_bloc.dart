@@ -39,8 +39,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     result.fold((error) => emit(AuthError(message: error.message)), (
       userCredential,
     ) {
-      // After signup, you may want to login automatically
-      // or fetch profile again depending on your architecture
+      emit(AuthAccountCreated(message: "Account created successfully"));
       emit(AuthInitial());
     });
   }
