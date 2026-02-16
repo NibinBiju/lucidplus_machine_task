@@ -24,4 +24,9 @@ class AuthRepositoryImpl extends AuthRepository {
   }) async {
     return await authSource.userSignUp(authModel: authModel);
   }
+
+  @override
+  Future<void> logout() async {
+    await authSource.logout();
+  }
 }

@@ -1,12 +1,16 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucidplus_machine_task/dependece_injection.dart';
 import 'package:lucidplus_machine_task/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:lucidplus_machine_task/features/auth/widgets/auth_switch.dart';
+import 'package:lucidplus_machine_task/features/profile/data/repository_impl.dart/profile_repository_impl.dart';
+import 'package:lucidplus_machine_task/features/profile/data/source/profile_source.dart';
 import 'package:lucidplus_machine_task/features/profile/presentation/bloc/theme_bloc.dart';
 import 'package:lucidplus_machine_task/features/profile/presentation/bloc/theme_event.dart';
+import 'package:lucidplus_machine_task/features/profile/presentation/cubit/update_name_cubit.dart';
 import 'package:lucidplus_machine_task/features/profile/presentation/pages/profile_page.dart';
 
 class SplashPage extends StatefulWidget {
@@ -34,7 +38,16 @@ class _SplashPageState extends State<SplashPage> {
       context.read<ThemeBloc>().add(LoadThemeEvent(user.uid));
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const ProfilePage()),
+        MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (context) => UpdateNameCubit(
+              ProfileRepositoryImpl(
+                ProfileRemoteDataSourceImpl(getIt<FirebaseFirestore>()),
+              ),
+            ),
+            child: ProfilePage(),
+          ),
+        ),
       );
     } else {
       Navigator.pushReplacement(

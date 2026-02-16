@@ -20,7 +20,7 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
 
     final isDark = await repository.getThemeMode(event.userId);
 
-    print("ISDARK:$isDark");
+    debugPrint("ISDARK:$isDark");
 
     emit(
       state.copyWith(

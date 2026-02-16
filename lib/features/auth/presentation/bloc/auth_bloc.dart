@@ -12,6 +12,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     : super(AuthInitial()) {
     on<LoginRequested>(_onLoginRequested);
     on<SignUpRequested>(_onSignUpRequested);
+    on<LogoutRequested>(_logOutRequested);
   }
 
   Future<void> _onLoginRequested(
@@ -42,5 +43,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthAccountCreated(message: "Account created successfully"));
       emit(AuthInitial());
     });
+  }
+
+  Future<void> _logOutRequested(
+    LogoutRequested logOutRequestedEvent,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLogout());
   }
 }

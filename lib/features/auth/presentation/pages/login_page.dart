@@ -1,15 +1,20 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucidplus_machine_task/core/validator/field_validator.dart';
 import 'package:lucidplus_machine_task/core/widgets/app_snackbar.dart';
+import 'package:lucidplus_machine_task/dependece_injection.dart';
 import 'package:lucidplus_machine_task/features/auth/data/model/auth_model.dart';
 import 'package:lucidplus_machine_task/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:lucidplus_machine_task/features/auth/presentation/bloc/auth_event.dart';
 import 'package:lucidplus_machine_task/features/auth/presentation/bloc/auth_state.dart';
 import 'package:lucidplus_machine_task/features/auth/widgets/custom_button.dart';
 import 'package:lucidplus_machine_task/features/auth/widgets/custom_text_field.dart';
+import 'package:lucidplus_machine_task/features/profile/data/repository_impl.dart/profile_repository_impl.dart';
+import 'package:lucidplus_machine_task/features/profile/data/source/profile_source.dart';
 import 'package:lucidplus_machine_task/features/profile/presentation/bloc/theme_bloc.dart';
 import 'package:lucidplus_machine_task/features/profile/presentation/bloc/theme_event.dart';
+import 'package:lucidplus_machine_task/features/profile/presentation/cubit/update_name_cubit.dart';
 import 'package:lucidplus_machine_task/features/profile/presentation/pages/profile_page.dart';
 
 class LoginPage extends StatelessWidget {
@@ -83,7 +88,16 @@ class LoginPage extends StatelessWidget {
                           return Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ProfilePage(),
+                              builder: (context) => BlocProvider(
+                                create: (context) => UpdateNameCubit(
+                                  ProfileRepositoryImpl(
+                                    ProfileRemoteDataSourceImpl(
+                                      getIt<FirebaseFirestore>(),
+                                    ),
+                                  ),
+                                ),
+                                child: ProfilePage(),
+                              ),
                             ),
                           );
                         });

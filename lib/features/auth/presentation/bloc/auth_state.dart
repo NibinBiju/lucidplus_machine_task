@@ -12,7 +12,7 @@ class AuthAuthenticated extends AuthState {
 }
 
 class AuthAccountCreated extends AuthState {
-   final String message;
+  final String message;
 
   AuthAccountCreated({required this.message});
 }
@@ -22,3 +22,5 @@ class AuthError extends AuthState {
 
   AuthError({required this.message});
 }
+
+class AuthLogout extends AuthState {}

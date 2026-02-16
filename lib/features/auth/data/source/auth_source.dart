@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:lucidplus_machine_task/core/app_errors.dart';
 import 'package:lucidplus_machine_task/features/auth/data/model/auth_model.dart';
 import 'package:lucidplus_machine_task/features/auth/data/model/user_model.dart';
@@ -12,6 +13,7 @@ abstract class AuthSource {
   Future<Either<AppException, UserCredential>> userSignUp({
     required AuthModel authModel,
   });
+  Future<void> logout();
 }
 
 class AuthSourceImplementation extends AuthSource {
@@ -43,7 +45,7 @@ class AuthSourceImplementation extends AuthSource {
 
       return Right(userModel);
     } on FirebaseAuthException catch (e) {
-      print("Failed ${e.code}");
+      debugPrint("Failed ${e.code}");
       return Left(_mapFirebaseError(e));
     } catch (e) {
       return Left(AuthException("Something went wrong. Please try again."));
@@ -55,8 +57,8 @@ class AuthSourceImplementation extends AuthSource {
     required AuthModel authModel,
   }) async {
     try {
-      print("Email :- ${authModel.email.trim()}");
-      print("Password :- ${authModel.password.trim()}");
+      debugPrint("Email :- ${authModel.email.trim()}");
+      debugPrint("Password :- ${authModel.password.trim()}");
 
       final result = await firebaseAuth.createUserWithEmailAndPassword(
         email: authModel.email.trim(),
@@ -70,15 +72,20 @@ class AuthSourceImplementation extends AuthSource {
         "createdAt": FieldValue.serverTimestamp(),
         "themeMode": "light",
       });
-      print("Success ${result.user}");
+      debugPrint("Success ${result.user}");
       return Right(result);
     } on FirebaseAuthException catch (e) {
-      print("Failed ${e.code}");
+      debugPrint("Failed ${e.code}");
       return Left(_mapFirebaseError(e));
     } catch (_) {
-      print("Something went wrong. Please try again.");
+      debugPrint("Something went wrong. Please try again.");
       return Left(AuthException("Something went wrong. Please try again."));
     }
+  }
+
+  @override
+  Future<void> logout() async {
+    await firebaseAuth.signOut();
   }
 }
 

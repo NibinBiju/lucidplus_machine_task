@@ -11,4 +11,6 @@ abstract class AuthRepository {
   Future<Either<AppException, UserCredential>> userSignUp({
     required AuthModel authModel,
   });
+
+  Future<void> logout();
 }
