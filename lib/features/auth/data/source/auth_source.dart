@@ -17,7 +17,10 @@ abstract class AuthSource {
 class AuthSourceImplementation extends AuthSource {
   final FirebaseAuth firebaseAuth;
   final FirebaseFirestore firestore;
-  AuthSourceImplementation({required this.firebaseAuth,required this.firestore});
+  AuthSourceImplementation({
+    required this.firebaseAuth,
+    required this.firestore,
+  });
 
   @override
   Future<Either<AppException, UserModel>> userLogin({
@@ -63,11 +66,13 @@ class AuthSourceImplementation extends AuthSource {
         "createdAt": FieldValue.serverTimestamp(),
         "themeMode": "light",
       });
-
+      print("Success ${result.user}");
       return Right(result);
     } on FirebaseAuthException catch (e) {
+      print("Failed ${e}");
       return Left(_mapFirebaseError(e));
     } catch (_) {
+      print("Something went wrong. Please try again.");
       return Left(AuthException("Something went wrong. Please try again."));
     }
   }
