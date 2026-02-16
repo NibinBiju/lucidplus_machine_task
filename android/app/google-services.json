@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "319185122646",
+    "project_id": "lucidplus-machine-task",
+    "storage_bucket": "lucidplus-machine-task.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:319185122646:android:2989f710318493b750d2f7",
+        "android_client_info": {
+          "package_name": "com.example.lucidplus_machine_task"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyByeXlp_VwaQDVohvifVMOFXVtZclkzCRE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
