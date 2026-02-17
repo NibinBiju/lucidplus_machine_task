@@ -43,4 +43,20 @@ class TaskCubit extends Cubit<TaskState> {
       isFetching = false;
     }
   }
+
+  void searchTasks(String query) async {
+    if (query.isEmpty) {
+      skip = 0;
+      tasks.clear();
+      tasks.clear();
+      await fetchTasks(refresh: true);
+      return;
+    }
+
+    tasks = tasks
+        .where((t) => t.title.toLowerCase().contains(query.toLowerCase()))
+        .toList();
+
+    emit(TaskLoaded(tasks: tasks, hasMore: tasks.length < tasks.length));
+  }
 }

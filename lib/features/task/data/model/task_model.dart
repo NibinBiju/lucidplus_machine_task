@@ -21,4 +21,15 @@ class TaskModel extends TaskEntity {
           DateTime.tryParse(json['created_at'] ?? '') ?? DateTime.now(),
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'title': title,
+      'is_completed': isCompleted,
+      'due_date': dueDate.toIso8601String(),
+      'priority': priority,
+      'category': category,
+      'created_at': createdDate.toIso8601String(),
+    };
+  }
 }

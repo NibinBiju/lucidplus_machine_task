@@ -87,91 +87,93 @@ class _ProfilePageState extends State<ProfilePage> {
             }
           },
           builder: (context, state) {
-            return Padding(
-              padding: const EdgeInsets.all(24),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 20),
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 20),
 
-                    Text("Name", style: theme.textTheme.labelLarge),
-                    const SizedBox(height: 8),
+                      Text("Name", style: theme.textTheme.labelLarge),
+                      const SizedBox(height: 8),
 
-                    TextFormField(
-                      controller: _nameController,
-                      decoration: const InputDecoration(
-                        hintText: "Enter your name",
-                        prefixIcon: Icon(Icons.person_outline),
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return "Name is required";
-                        }
-                        if (value.trim().length < 3) {
-                          return "Minimum 3 characters required";
-                        }
-                        return null;
-                      },
-                    ),
-
-                    const SizedBox(height: 30),
-
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: theme.colorScheme.surfaceContainerHighest,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: const [
-                              Icon(Icons.dark_mode_outlined),
-                              SizedBox(width: 12),
-                              Text("Dark Mode"),
-                            ],
-                          ),
-                          Switch(
-                            value:
-                                context.watch<ThemeBloc>().state.themeMode ==
-                                ThemeMode.dark,
-                            onChanged: (value) {
-                              final userId =
-                                  FirebaseAuth.instance.currentUser!.uid;
-
-                              context.read<ThemeBloc>().add(
-                                ToggleThemeEvent(
-                                  userId: userId,
-                                  isDarkMode: value,
-                                ),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 40),
-
-                    /// save button
-                    SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton(
-                        onPressed: _saveProfile,
-                        style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
+                      TextFormField(
+                        controller: _nameController,
+                        decoration: const InputDecoration(
+                          hintText: "Enter your name",
+                          prefixIcon: Icon(Icons.person_outline),
+                          border: OutlineInputBorder(),
                         ),
-                        child: const Text("Save"),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return "Name is required";
+                          }
+                          if (value.trim().length < 3) {
+                            return "Minimum 3 characters required";
+                          }
+                          return null;
+                        },
                       ),
-                    ),
-                  ],
+
+                      const SizedBox(height: 30),
+
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: theme.colorScheme.surfaceContainerHighest,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: const [
+                                Icon(Icons.dark_mode_outlined),
+                                SizedBox(width: 12),
+                                Text("Dark Mode"),
+                              ],
+                            ),
+                            Switch(
+                              value:
+                                  context.watch<ThemeBloc>().state.themeMode ==
+                                  ThemeMode.dark,
+                              onChanged: (value) {
+                                final userId =
+                                    FirebaseAuth.instance.currentUser!.uid;
+
+                                context.read<ThemeBloc>().add(
+                                  ToggleThemeEvent(
+                                    userId: userId,
+                                    isDarkMode: value,
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 40),
+
+                      /// save button
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton(
+                          onPressed: _saveProfile,
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                          ),
+                          child: const Text("Save"),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             );

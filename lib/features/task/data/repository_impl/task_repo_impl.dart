@@ -1,12 +1,14 @@
+import 'package:dartz/dartz.dart';
+import 'package:lucidplus_machine_task/features/task/data/model/task_model.dart';
 import 'package:lucidplus_machine_task/features/task/data/source/task_source.dart';
 import 'package:lucidplus_machine_task/features/task/domain/entity/task_entity.dart';
 
 import '../../domain/repository/task_repository.dart';
 
 class TaskRepositoryImpl implements TaskRepository {
-  final TaskRemoteSource remoteDataSource;
+  final TaskRemoteSource remoteSource;
 
-  TaskRepositoryImpl(this.remoteDataSource);
+  TaskRepositoryImpl(this.remoteSource);
 
   @override
   Future<List<TaskEntity>> fetchTasks({
@@ -14,6 +16,31 @@ class TaskRepositoryImpl implements TaskRepository {
     required int skip,
     required int limit,
   }) async {
-    return await remoteDataSource.getTasks(userId, skip, limit);
+    return await remoteSource.getTasks(userId, skip, limit);
+  }
+
+  @override
+  Future<Either<dynamic, dynamic>> addTask(
+    String userId,
+    TaskEntity task,
+  ) async {
+    final model = TaskModel(
+      title: task.title,
+      isCompleted: task.isCompleted,
+      dueDate: task.dueDate,
+      priority: task.priority,
+      category: task.category,
+      createdDate: task.createdDate,
+    );
+    var returnedData = await remoteSource.addTask(userId, model);
+
+    return returnedData.fold(
+      (error) {
+        return Left("Failed");
+      },
+      (success) {
+        return Right("Failed");
+      },
+    );
   }
 }

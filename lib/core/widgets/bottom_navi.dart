@@ -10,6 +10,7 @@ import 'package:lucidplus_machine_task/features/profile/presentation/cubit/updat
 import 'package:lucidplus_machine_task/features/profile/presentation/pages/profile_page.dart';
 import 'package:lucidplus_machine_task/features/task/data/repository_impl/task_repo_impl.dart';
 import 'package:lucidplus_machine_task/features/task/data/source/task_source.dart';
+import 'package:lucidplus_machine_task/features/task/presentation/cubit/add_task_cubit.dart';
 import 'package:lucidplus_machine_task/features/task/presentation/cubit/task_cubit.dart';
 import 'package:lucidplus_machine_task/features/task/presentation/pages/task_page.dart';
 
@@ -30,11 +31,21 @@ class _BottomNavigationWidgetState extends State<BottomNavigationWidget> {
   void initState() {
     final user = FirebaseAuth.instance.currentUser;
     pages = [
-      BlocProvider(
-        create: (_) => TaskCubit(
-          repository: TaskRepositoryImpl(TaskRemoteSourceImpl(DioClient())),
-          userId: user.uid,
-        )..fetchTasks(),
+      MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (_) => TaskCubit(
+              repository: TaskRepositoryImpl(TaskRemoteSourceImpl(DioClient())),
+              userId: user!.uid,
+            )..fetchTasks(),
+          ),
+          BlocProvider(
+            create: (_) => AddTaskCubit(
+              repository: TaskRepositoryImpl(TaskRemoteSourceImpl(DioClient())),
+              userId: user!.uid,
+            ),
+          ),
+        ],
         child: TaskPage(userId: user!.uid),
       ),
       BlocProvider(
