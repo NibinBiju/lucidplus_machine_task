@@ -10,6 +10,7 @@ import 'package:lucidplus_machine_task/features/profile/data/repository_impl.dar
 import 'package:lucidplus_machine_task/features/profile/data/source/profile_source.dart';
 import 'package:lucidplus_machine_task/features/profile/presentation/bloc/theme_bloc.dart';
 import 'package:lucidplus_machine_task/features/profile/presentation/bloc/theme_state.dart';
+import 'package:lucidplus_machine_task/features/profile/presentation/cubit/get_user_details_cubit.dart';
 import 'package:lucidplus_machine_task/features/splash/presentation/pages/splash_page.dart';
 import 'firebase_options.dart';
 
@@ -20,12 +21,17 @@ void main() async {
   DependenceInjection().dependenceInject();
 
   runApp(
-    BlocProvider(
-      create: (context) => ThemeBloc(
-        ProfileRepositoryImpl(
-          ProfileRemoteDataSourceImpl(getIt<FirebaseFirestore>()),
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => ThemeBloc(
+            ProfileRepositoryImpl(
+              ProfileRemoteDataSourceImpl(getIt<FirebaseFirestore>()),
+            ),
+          ),
         ),
-      ),
+        BlocProvider(create: (context) => getIt<AuthBloc>()),
+      ],
       child: const MyApp(),
     ),
   );
@@ -43,8 +49,17 @@ class MyApp extends StatelessWidget {
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: state.themeMode,
-          home: BlocProvider(
-            create: (context) => getIt<AuthBloc>(),
+          home: MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (context) => getIt<AuthBloc>()),
+              BlocProvider(
+                create: (context) => GetUserDetailsCubit(
+                  ProfileRepositoryImpl(
+                    ProfileRemoteDataSourceImpl(getIt<FirebaseFirestore>()),
+                  ),
+                ),
+              ),
+            ],
             child: const SplashPage(),
           ),
         );

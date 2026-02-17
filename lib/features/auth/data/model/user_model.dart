@@ -2,7 +2,7 @@ class UserModel {
   final String uid;
   final String name;
   final String email;
-  final String themeMode;
+  final bool themeMode;
 
   UserModel({
     required this.uid,

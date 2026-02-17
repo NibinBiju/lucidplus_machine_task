@@ -5,6 +5,7 @@ import 'package:lucidplus_machine_task/features/auth/data/repository_impl/auth_r
 import 'package:lucidplus_machine_task/features/auth/data/source/auth_source.dart';
 import 'package:lucidplus_machine_task/features/auth/domain/repository/auth_repository.dart';
 import 'package:lucidplus_machine_task/features/auth/domain/usecase/login_usecase.dart';
+import 'package:lucidplus_machine_task/features/auth/domain/usecase/logout_usecase.dart';
 import 'package:lucidplus_machine_task/features/auth/domain/usecase/signup_usecase.dart';
 import 'package:lucidplus_machine_task/features/auth/presentation/bloc/auth_bloc.dart';
 
@@ -31,8 +32,15 @@ class DependenceInjection {
     getIt.registerLazySingleton<SignUpUseCase>(
       () => SignUpUseCase(getIt<AuthRepository>()),
     );
+    getIt.registerLazySingleton<LogoutUsecase>(
+      () => LogoutUsecase(getIt<AuthRepository>()),
+    );
     getIt.registerFactory(
-      () => AuthBloc(loginUseCase: getIt(), signUpUseCase: getIt()),
+      () => AuthBloc(
+        loginUseCase: getIt(),
+        signUpUseCase: getIt(),
+        logoutUsecase: getIt(),
+      ),
     );
   }
 }

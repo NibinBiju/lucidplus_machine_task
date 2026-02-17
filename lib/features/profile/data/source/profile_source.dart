@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:lucidplus_machine_task/features/auth/data/model/user_model.dart';
 
 abstract class ProfileRemoteSource {
   Future<void> updateThemeMode({
@@ -15,6 +16,8 @@ abstract class ProfileRemoteSource {
     required String userId,
     required String newName,
   });
+
+  Future<UserModel> fetchUser(String uid);
 }
 
 class ProfileRemoteDataSourceImpl implements ProfileRemoteSource {
@@ -62,5 +65,24 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteSource {
       debugPrint("Error:${e}");
       return Left("User name updating failed");
     }
+  }
+
+  @override
+  Future<UserModel> fetchUser(String uid) async {
+    print("UID get:${uid}");
+    try {
+      final doc = await firestore.collection('users').doc(uid).get();
+
+      if (doc.exists && doc.data() != null) {
+        print("Getted");
+        return UserModel.fromJson(doc.data()!);
+      }
+    } on FirebaseAuthException catch (e) {
+      print("error:${e}");
+    } catch (e) {
+      print("error:${e}");
+    }
+
+    return UserModel(uid: uid, name: '', email: '', themeMode: false);
   }
 }

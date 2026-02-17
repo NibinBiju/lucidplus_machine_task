@@ -2,22 +2,26 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucidplus_machine_task/core/widgets/app_snackbar.dart';
+import 'package:lucidplus_machine_task/dependece_injection.dart';
+import 'package:lucidplus_machine_task/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:lucidplus_machine_task/features/auth/presentation/bloc/auth_event.dart';
+import 'package:lucidplus_machine_task/features/auth/widgets/auth_switch.dart';
 import 'package:lucidplus_machine_task/features/profile/presentation/bloc/theme_bloc.dart';
 import 'package:lucidplus_machine_task/features/profile/presentation/bloc/theme_event.dart';
 import 'package:lucidplus_machine_task/features/profile/presentation/cubit/update_name_cubit.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+  const ProfilePage({super.key, required this.name});
+
+  final String name;
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final TextEditingController _nameController = TextEditingController();
+  late TextEditingController _nameController;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-  bool _isDarkMode = false;
 
   @override
   void dispose() {
@@ -25,13 +29,17 @@ class _ProfilePageState extends State<ProfilePage> {
     super.dispose();
   }
 
+  @override
+  void initState() {
+    _nameController = TextEditingController(text: widget.name);
+    super.initState();
+  }
+
   void _saveProfile() {
     if (!_formKey.currentState!.validate()) return;
 
     final name = _nameController.text.trim();
 
-    debugPrint("Name: $name");
-    debugPrint("Dark Mode: $_isDarkMode");
     final user = FirebaseAuth.instance.currentUser;
     context.read<UpdateNameCubit>().updateName(
       userId: user!.uid,
@@ -39,9 +47,21 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  void _logout() {
-    // Trigger logout
-    debugPrint("Logout clicked");
+  void _logout() async {
+    context.read<AuthBloc>().add(LogoutRequested());
+    AppSnackBar.showSuccess(context, "Logout successfully");
+
+    Future.delayed(const Duration(milliseconds: 800), () {
+      return Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (context) => getIt<AuthBloc>(),
+            child: const AuthSwitch(),
+          ),
+        ),
+      );
+    });
   }
 
   @override

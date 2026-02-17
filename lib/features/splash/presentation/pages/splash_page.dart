@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lucidplus_machine_task/core/widgets/bottom_navi.dart';
 import 'package:lucidplus_machine_task/dependece_injection.dart';
 import 'package:lucidplus_machine_task/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:lucidplus_machine_task/features/auth/widgets/auth_switch.dart';
@@ -10,8 +11,8 @@ import 'package:lucidplus_machine_task/features/profile/data/repository_impl.dar
 import 'package:lucidplus_machine_task/features/profile/data/source/profile_source.dart';
 import 'package:lucidplus_machine_task/features/profile/presentation/bloc/theme_bloc.dart';
 import 'package:lucidplus_machine_task/features/profile/presentation/bloc/theme_event.dart';
+import 'package:lucidplus_machine_task/features/profile/presentation/cubit/get_user_details_cubit.dart';
 import 'package:lucidplus_machine_task/features/profile/presentation/cubit/update_name_cubit.dart';
-import 'package:lucidplus_machine_task/features/profile/presentation/pages/profile_page.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -36,16 +37,38 @@ class _SplashPageState extends State<SplashPage> {
 
     if (user != null) {
       context.read<ThemeBloc>().add(LoadThemeEvent(user.uid));
+
+      print("USER ID${user.uid}");
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => BlocProvider(
-            create: (context) => UpdateNameCubit(
-              ProfileRepositoryImpl(
-                ProfileRemoteDataSourceImpl(getIt<FirebaseFirestore>()),
+          builder: (_) => MultiBlocProvider(
+            providers: [
+              BlocProvider(
+                create: (context) => UpdateNameCubit(
+                  ProfileRepositoryImpl(
+                    ProfileRemoteDataSourceImpl(getIt<FirebaseFirestore>()),
+                  ),
+                ),
               ),
+              BlocProvider(
+                create: (context) => GetUserDetailsCubit(
+                  ProfileRepositoryImpl(
+                    ProfileRemoteDataSourceImpl(getIt<FirebaseFirestore>()),
+                  ),
+                )..getUserDetails(uid: user.uid),
+              ),
+            ],
+            child: BlocBuilder<GetUserDetailsCubit, GetUserDetailsState>(
+              builder: (context, state) {
+                if (state is GetUserDetailsSuccess) {
+                  return BottomNavigationWidget(name: state.userModel.name);
+                }
+
+                return BottomNavigationWidget(name: "Not found");
+              },
             ),
-            child: ProfilePage(),
           ),
         ),
       );
@@ -83,7 +106,7 @@ class _SplashPageState extends State<SplashPage> {
             Icon(Icons.task_alt, size: 80, color: Colors.white),
             SizedBox(height: 20),
             Text(
-              "Task Manager",
+              "Smart Task Manager",
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,

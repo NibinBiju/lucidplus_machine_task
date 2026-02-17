@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:lucidplus_machine_task/core/app_errors.dart';
+import 'package:lucidplus_machine_task/core/app_errors/app_errors.dart';
 import 'package:lucidplus_machine_task/features/auth/data/model/auth_model.dart';
 import 'package:lucidplus_machine_task/features/auth/data/model/user_model.dart';
 
@@ -29,6 +29,8 @@ class AuthSourceImplementation extends AuthSource {
     required AuthModel authModel,
   }) async {
     try {
+      debugPrint("Email :- ${authModel.email.trim()}");
+      debugPrint("Password :- ${authModel.password.trim()}");
       final credential = await firebaseAuth.signInWithEmailAndPassword(
         email: authModel.email.trim(),
         password: authModel.password.trim(),
@@ -48,6 +50,7 @@ class AuthSourceImplementation extends AuthSource {
       debugPrint("Failed ${e.code}");
       return Left(_mapFirebaseError(e));
     } catch (e) {
+      debugPrint("Failed ${e}");
       return Left(AuthException("Something went wrong. Please try again."));
     }
   }
@@ -85,6 +88,7 @@ class AuthSourceImplementation extends AuthSource {
 
   @override
   Future<void> logout() async {
+    print("called");
     await firebaseAuth.signOut();
   }
 }

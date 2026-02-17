@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:lucidplus_machine_task/core/app_errors.dart';
+import 'package:lucidplus_machine_task/core/app_errors/app_errors.dart';
 
 class AppInterceptors extends Interceptor {
   @override
