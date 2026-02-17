@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import 'package:lucidplus_machine_task/core/network/dio_client.dart';
+import 'package:lucidplus_machine_task/core/dio_service/dio_client.dart';
 import 'package:lucidplus_machine_task/features/tasks/data/model/task_model.dart';
 import 'package:lucidplus_machine_task/features/tasks/domain/entity/task_entity.dart';
 

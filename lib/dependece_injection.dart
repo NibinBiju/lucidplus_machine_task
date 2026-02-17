@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
+import 'package:lucidplus_machine_task/core/network/cubit/network_cubit.dart';
+import 'package:lucidplus_machine_task/core/network/data/network_repository_impl.dart';
+import 'package:lucidplus_machine_task/core/network/domain/network_repo.dart';
 import 'package:lucidplus_machine_task/features/auth/data/repository_impl/auth_repository_impl.dart';
 import 'package:lucidplus_machine_task/features/auth/data/source/auth_source.dart';
 import 'package:lucidplus_machine_task/features/auth/domain/repository/auth_repository.dart';
@@ -41,6 +44,14 @@ class DependenceInjection {
         signUpUseCase: getIt(),
         logoutUsecase: getIt(),
       ),
+    );
+    //network
+    // Network
+    getIt.registerLazySingleton<NetworkRepository>(
+      () => NetworkRepositoryImpl(),
+    );
+    getIt.registerFactory(
+      () => NetworkCubit(repository: getIt<NetworkRepository>()),
     );
   }
 }

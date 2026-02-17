@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lucidplus_machine_task/core/network/dio_client.dart';
+import 'package:lucidplus_machine_task/core/dio_service/dio_client.dart';
 import 'package:lucidplus_machine_task/dependece_injection.dart';
 import 'package:lucidplus_machine_task/features/profile/data/repository_impl.dart/profile_repository_impl.dart';
 import 'package:lucidplus_machine_task/features/profile/data/source/profile_source.dart';

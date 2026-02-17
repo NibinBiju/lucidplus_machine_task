@@ -9,7 +9,6 @@ import 'package:lucidplus_machine_task/features/tasks/domain/entity/task_entity.
 import 'package:lucidplus_machine_task/features/tasks/presentation/cubit/add_task_cubit.dart';
 import 'package:lucidplus_machine_task/features/tasks/presentation/cubit/add_task_state.dart';
 import 'package:lucidplus_machine_task/features/tasks/presentation/cubit/task_cubit.dart';
-import 'package:lucidplus_machine_task/features/tasks/presentation/cubit/update_task_cubit.dart';
 
 class TaskPage extends StatelessWidget {
   final String userId;
@@ -46,27 +45,12 @@ class _TaskViewState extends State<TaskView> {
     }
   }
 
-  Future<void> _showAddTaskBottomSheet(
-    BuildContext context,
-    TaskEntity? task,
-  ) async {
-    final result = await showModalBottomSheet<bool>(
+  void _showAddTaskBottomSheet(BuildContext context) {
+    showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (_) => AddTaskBottomSheet(task: task),
+      builder: (_) => const AddTaskBottomSheet(),
     );
-
-    if (result == true) {
-      try {
-        context.read<TaskCubit>().fetchTasks(refresh: true);
-      } catch (_) {}
-    }
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
   }
 
   @override
@@ -89,7 +73,7 @@ class _TaskViewState extends State<TaskView> {
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 120),
         child: FloatingActionButton(
-          onPressed: () => _showAddTaskBottomSheet(context, null),
+          onPressed: () => _showAddTaskBottomSheet(context),
           backgroundColor: primary,
           child: const Icon(Icons.add),
         ),
@@ -148,7 +132,7 @@ class _TaskViewState extends State<TaskView> {
                       "${task.category} • ${task.priority} • Due: ${task.dueDate.toLocal().toShortDateString()}",
                     ),
                     trailing: IconButton(
-                      onPressed: () => _showAddTaskBottomSheet(context, task),
+                      onPressed: () {},
                       icon: Icon(Icons.edit),
                     ),
                   ),
@@ -163,8 +147,7 @@ class _TaskViewState extends State<TaskView> {
 }
 
 class AddTaskBottomSheet extends StatefulWidget {
-  final TaskEntity? task;
-  const AddTaskBottomSheet({super.key, this.task});
+  const AddTaskBottomSheet({super.key});
 
   @override
   State<AddTaskBottomSheet> createState() => _AddTaskBottomSheetState();
@@ -172,49 +155,36 @@ class AddTaskBottomSheet extends StatefulWidget {
 
 class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
   final _formKey = GlobalKey<FormState>();
-  late TextEditingController _titleController;
-  late String _priority;
-  late String _category;
-  late DateTime _dueDate;
-  late bool _isCompleted;
-
-  @override
-  void initState() {
-    super.initState();
-
-    // Initialize fields for Add or Update
-    _titleController = TextEditingController(text: widget.task?.title ?? '');
-
-    _priority = widget.task?.priority ?? 'Low';
-    _category = widget.task?.category ?? 'Personal';
-    _dueDate = widget.task?.dueDate ?? DateTime.now();
-    _isCompleted = widget.task?.isCompleted ?? false;
-  }
+  final _titleController = TextEditingController();
+  final _descController = TextEditingController();
+  String _priority = 'Low';
+  String _category = 'Personal';
+  DateTime _dueDate = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
-
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (context) => AddTaskCubit(
-            repository: TaskRepositoryImpl(TaskRemoteSourceImpl(DioClient())),
-            userId: user!.uid,
-          ),
-        ),
-        BlocProvider(
-          create: (context) => UpdateTaskCubit(
-            repository: TaskRepositoryImpl(TaskRemoteSourceImpl(DioClient())),
-            userId: user!.uid,
-          ),
-        ),
-      ],
+    return BlocProvider(
+      create: (context) => AddTaskCubit(
+        repository: TaskRepositoryImpl(TaskRemoteSourceImpl(DioClient())),
+        userId: user!.uid,
+      ),
       child: BlocConsumer<AddTaskCubit, AddTaskState>(
         listener: (context, state) {
           if (state is AddTaskSuccess) {
-            // Return true to the parent so it can refresh tasks from its context
-            Navigator.pop(context, true);
+            try {
+              context.read<TaskCubit>().fetchTasks(refresh: true);
+            } catch (_) {
+              final parentContext = Navigator.of(context).overlay?.context;
+              if (parentContext != null) {
+                try {
+                  parentContext.read<TaskCubit>().fetchTasks(refresh: true);
+                } catch (_) {}
+              }
+            }
+
+            Navigator.pop(context);
+
             AppSnackBar.showSuccess(context, "Task added successfully");
           } else if (state is AddTaskFailed) {
             AppSnackBar.showSuccess(context, state.errorMessage);
@@ -238,7 +208,12 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                       validator: (val) =>
                           val == null || val.isEmpty ? 'Enter title' : null,
                     ),
-
+                    TextFormField(
+                      controller: _descController,
+                      decoration: const InputDecoration(
+                        labelText: 'Description',
+                      ),
+                    ),
                     Row(
                       children: [
                         DropdownButton<String>(
@@ -249,7 +224,9 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                                     DropdownMenuItem(value: e, child: Text(e)),
                               )
                               .toList(),
-                          onChanged: (val) => setState(() => _priority = val!),
+                          onChanged: (val) {
+                            if (val != null) setState(() => _priority = val);
+                          },
                         ),
                         const SizedBox(width: 20),
                         DropdownButton<String>(
@@ -260,18 +237,10 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                                     DropdownMenuItem(value: e, child: Text(e)),
                               )
                               .toList(),
-                          onChanged: (val) => setState(() => _category = val!),
+                          onChanged: (val) {
+                            if (val != null) setState(() => _category = val);
+                          },
                         ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Checkbox(
-                          value: _isCompleted,
-                          onChanged: (val) =>
-                              setState(() => _isCompleted = val!),
-                        ),
-                        const Text("Completed"),
                       ],
                     ),
                     ListTile(
@@ -294,43 +263,21 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                           ? null
                           : () {
                               if (_formKey.currentState!.validate()) {
-                                final taskEntity = TaskEntity(
-                                  id: widget.task?.id ?? 0,
-                                  title: _titleController.text,
-                                  priority: _priority,
-                                  category: _category,
-                                  isCompleted: _isCompleted,
-                                  dueDate: _dueDate,
-                                  createdDate:
-                                      widget.task?.createdDate ??
-                                      DateTime.now(),
-                                );
+                                context.read<AddTaskCubit>().addTask(
+                                  TaskEntity(
+                                    title: _titleController.text,
 
-                                if (widget.task != null) {
-                                  // Update
-                                  context
-                                      .read<UpdateTaskCubit>()
-                                      .updateTask(taskEntity)
-                                      .then((_) {
-                                        Navigator.pop(context, true);
-                                        AppSnackBar.showSuccess(
-                                          context,
-                                          "Task updated successfully",
-                                        );
-                                      });
-                                } else {
-                                  // Add
-                                  context.read<AddTaskCubit>().addTask(
-                                    taskEntity,
-                                  );
-                                }
+                                    isCompleted: false,
+                                    dueDate: _dueDate,
+                                    priority: _priority,
+                                    category: _category,
+                                  ),
+                                );
                               }
                             },
                       child: state is TaskLoading
                           ? const CircularProgressIndicator(color: Colors.white)
-                          : Text(
-                              widget.task != null ? 'Update Task' : 'Add Task',
-                            ),
+                          : const Text('Add Task'),
                     ),
                   ],
                 ),

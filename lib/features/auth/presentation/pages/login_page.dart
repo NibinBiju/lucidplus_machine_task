@@ -13,16 +13,32 @@ import 'package:lucidplus_machine_task/features/auth/widgets/custom_text_field.d
 import 'package:lucidplus_machine_task/features/profile/presentation/bloc/theme_bloc.dart';
 import 'package:lucidplus_machine_task/features/profile/presentation/bloc/theme_event.dart';
 
-
-class LoginPage extends StatelessWidget {
-  LoginPage({super.key, required this.onSwitch});
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key, required this.onSwitch});
 
   final VoidCallback onSwitch;
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailTextEditController =
       TextEditingController();
+
   final TextEditingController _passwordTextEditController =
       TextEditingController();
+
   final GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    _emailTextEditController.dispose();
+    _passwordTextEditController.dispose();
+
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -121,7 +137,7 @@ class LoginPage extends StatelessWidget {
 
                   Center(
                     child: TextButton(
-                      onPressed: onSwitch,
+                      onPressed: widget.onSwitch,
                       child: const Text("Don't have an account? Sign Up"),
                     ),
                   ),

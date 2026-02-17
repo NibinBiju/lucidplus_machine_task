@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_ce_flutter/hive_ce_flutter.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
+import 'package:lucidplus_machine_task/core/network/cubit/network_cubit.dart';
 import 'package:lucidplus_machine_task/core/theme/app_theme.dart';
 import 'package:lucidplus_machine_task/dependece_injection.dart';
 import 'package:lucidplus_machine_task/features/auth/presentation/bloc/auth_bloc.dart';
@@ -31,14 +35,54 @@ void main() async {
           ),
         ),
         BlocProvider(create: (context) => getIt<AuthBloc>()),
+        BlocProvider(create: (context) => getIt<NetworkCubit>()),
       ],
       child: const MyApp(),
     ),
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  bool isConnectedToInternet = false;
+  StreamSubscription? _streamSubscription;
+
+  @override
+  void initState() {
+    _streamSubscription = InternetConnection().onStatusChange.listen((event) {
+      print("Network event:$event");
+      switch (event) {
+        case InternetStatus.connected:
+          setState(() {
+            isConnectedToInternet = true;
+          });
+          break;
+        case InternetStatus.disconnected:
+          setState(() {
+            isConnectedToInternet = false;
+          });
+          break;
+        default:
+          setState(() {
+            isConnectedToInternet = false;
+          });
+          break;
+      }
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _streamSubscription?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +104,9 @@ class MyApp extends StatelessWidget {
                 ),
               ),
             ],
-            child: const SplashPage(),
+            child: isConnectedToInternet
+                ? const SplashPage()
+                : Scaffold(body: Center(child: Text("No Internet"))),
           ),
         );
       },

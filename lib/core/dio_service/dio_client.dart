@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:lucidplus_machine_task/core/network/dio_interceptors.dart';
+import 'package:lucidplus_machine_task/core/dio_service/dio_interceptors.dart';
 
 class DioClient {
   late final Dio dio;
