@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
-import 'package:lucidplus_machine_task/features/task/domain/entity/task_entity.dart';
-import 'package:lucidplus_machine_task/features/task/domain/repository/task_repository.dart';
+import 'package:lucidplus_machine_task/features/tasks/domain/entity/task_entity.dart';
+import 'package:lucidplus_machine_task/features/tasks/domain/repository/task_repository.dart';
 
 class AddTaskUsecase {
   final TaskRepository repository;

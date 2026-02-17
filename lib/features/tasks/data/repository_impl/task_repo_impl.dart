@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
-import 'package:lucidplus_machine_task/features/task/data/model/task_model.dart';
-import 'package:lucidplus_machine_task/features/task/data/source/task_source.dart';
-import 'package:lucidplus_machine_task/features/task/domain/entity/task_entity.dart';
+import 'package:lucidplus_machine_task/features/tasks/data/model/task_model.dart';
+import 'package:lucidplus_machine_task/features/tasks/data/source/task_source.dart';
+import 'package:lucidplus_machine_task/features/tasks/domain/entity/task_entity.dart';
 
 import '../../domain/repository/task_repository.dart';
 
@@ -39,8 +39,17 @@ class TaskRepositoryImpl implements TaskRepository {
         return Left("Failed");
       },
       (success) {
-        return Right("Failed");
+        return Right("Success");
       },
     );
+  }
+
+  @override
+  Future<Either> updateTask(
+    String userId,
+    int taskId,
+    Map<String, dynamic> data,
+  ) async {
+    return await remoteSource.updateTask(userId, taskId, data);
   }
 }

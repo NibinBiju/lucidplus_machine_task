@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lucidplus_machine_task/features/task/domain/entity/task_entity.dart';
+import 'package:lucidplus_machine_task/features/tasks/domain/entity/task_entity.dart';
 import '../../domain/repository/task_repository.dart';
 
 part 'task_state.dart';

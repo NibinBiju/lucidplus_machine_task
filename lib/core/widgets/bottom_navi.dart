@@ -8,11 +8,11 @@ import 'package:lucidplus_machine_task/features/profile/data/repository_impl.dar
 import 'package:lucidplus_machine_task/features/profile/data/source/profile_source.dart';
 import 'package:lucidplus_machine_task/features/profile/presentation/cubit/update_name_cubit.dart';
 import 'package:lucidplus_machine_task/features/profile/presentation/pages/profile_page.dart';
-import 'package:lucidplus_machine_task/features/task/data/repository_impl/task_repo_impl.dart';
-import 'package:lucidplus_machine_task/features/task/data/source/task_source.dart';
-import 'package:lucidplus_machine_task/features/task/presentation/cubit/add_task_cubit.dart';
-import 'package:lucidplus_machine_task/features/task/presentation/cubit/task_cubit.dart';
-import 'package:lucidplus_machine_task/features/task/presentation/pages/task_page.dart';
+import 'package:lucidplus_machine_task/features/tasks/data/repository_impl/task_repo_impl.dart';
+import 'package:lucidplus_machine_task/features/tasks/data/source/task_source.dart';
+import 'package:lucidplus_machine_task/features/tasks/presentation/cubit/add_task_cubit.dart';
+import 'package:lucidplus_machine_task/features/tasks/presentation/cubit/task_cubit.dart';
+import 'package:lucidplus_machine_task/features/tasks/presentation/pages/task_page.dart';
 
 class BottomNavigationWidget extends StatefulWidget {
   const BottomNavigationWidget({super.key, required this.name});

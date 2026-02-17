@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lucidplus_machine_task/features/task/domain/entity/task_entity.dart';
-import 'package:lucidplus_machine_task/features/task/presentation/cubit/add_task_state.dart';
+import 'package:lucidplus_machine_task/features/tasks/domain/entity/task_entity.dart';
+import 'package:lucidplus_machine_task/features/tasks/presentation/cubit/add_task_state.dart';
 import '../../domain/repository/task_repository.dart';
 
 class AddTaskCubit extends Cubit<AddTaskState> {

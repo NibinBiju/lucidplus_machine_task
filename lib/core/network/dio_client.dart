@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:lucidplus_machine_task/core/network/dio_interceptors.dart';
 
 class DioClient {
   late final Dio dio;
@@ -13,19 +14,6 @@ class DioClient {
       ),
     );
 
-    dio.interceptors.add(
-      InterceptorsWrapper(
-        onRequest: (options, handler) {
-          // You can log here
-          return handler.next(options);
-        },
-        onResponse: (response, handler) {
-          return handler.next(response);
-        },
-        onError: (DioException e, handler) {
-          return handler.next(e);
-        },
-      ),
-    );
+    dio.interceptors.add(AppInterceptors());
   }
 }

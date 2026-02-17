@@ -1,10 +1,11 @@
 class TaskEntity {
+  final int? id;
   final String title;
   final bool isCompleted;
   final DateTime dueDate;
   final String priority;
   final String category;
-  final DateTime createdDate; 
+  final DateTime createdDate;
 
   TaskEntity({
     required this.title,
@@ -13,5 +14,6 @@ class TaskEntity {
     required this.priority,
     required this.category,
     DateTime? createdDate,
-  }) : createdDate = createdDate ?? DateTime.now(); 
+    this.id,
+  }) : createdDate = createdDate ?? DateTime.now();
 }

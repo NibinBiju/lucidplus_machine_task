@@ -1,11 +1,16 @@
 import 'package:dartz/dartz.dart';
 import 'package:lucidplus_machine_task/core/network/dio_client.dart';
-import 'package:lucidplus_machine_task/features/task/data/model/task_model.dart';
-import 'package:lucidplus_machine_task/features/task/domain/entity/task_entity.dart';
+import 'package:lucidplus_machine_task/features/tasks/data/model/task_model.dart';
+import 'package:lucidplus_machine_task/features/tasks/domain/entity/task_entity.dart';
 
 abstract class TaskRemoteSource {
   Future<List<TaskModel>> getTasks(String userId, int skip, int limit);
   Future<Either> addTask(String userId, TaskEntity task);
+  Future<Either> updateTask(
+    String userId,
+    int taskId,
+    Map<String, dynamic> data,
+  );
 }
 
 class TaskRemoteSourceImpl implements TaskRemoteSource {
@@ -49,6 +54,31 @@ class TaskRemoteSourceImpl implements TaskRemoteSource {
       }
     } catch (e) {
       return Left("Failed to create task: ${e.toString()}");
+    }
+  }
+
+  @override
+  Future<Either> updateTask(
+    String userId,
+    int taskId,
+    Map<String, dynamic> data,
+  ) async {
+    try {
+      var returnedData = await dioClient.dio.put(
+        '/tasks/$taskId',
+        queryParameters: {'user_id': userId},
+        data: data,
+      );
+      print("status message${returnedData.statusCode}");
+      if (returnedData.statusCode == 200) {
+        print("Successs");
+        return Right("Success");
+      } else {
+        print("Failed");
+        return Left("Failed");
+      }
+    } catch (e) {
+      return Left(e);
     }
   }
 }

@@ -1,4 +1,4 @@
-import 'package:lucidplus_machine_task/features/task/domain/entity/task_entity.dart';
+import 'package:lucidplus_machine_task/features/tasks/domain/entity/task_entity.dart';
 
 class TaskModel extends TaskEntity {
   TaskModel({
@@ -8,6 +8,7 @@ class TaskModel extends TaskEntity {
     required super.dueDate,
     required super.isCompleted,
     required super.createdDate,
+    super.id,
   });
 
   factory TaskModel.fromJson(Map<String, dynamic> json) {
@@ -19,6 +20,7 @@ class TaskModel extends TaskEntity {
       dueDate: DateTime.tryParse(json['due_date'] ?? '') ?? DateTime.now(),
       createdDate:
           DateTime.tryParse(json['created_at'] ?? '') ?? DateTime.now(),
+      id: json['id'] ?? 0,
     );
   }
 
@@ -30,6 +32,7 @@ class TaskModel extends TaskEntity {
       'priority': priority,
       'category': category,
       'created_at': createdDate.toIso8601String(),
+      'id': id,
     };
   }
 }
